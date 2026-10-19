@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Argent de Fête</title>
+<meta name="description" content="Le jeu qui calcule, pour rire, combien ton partenaire doit donner (ou recevoir) pour les fêtes.">
+<meta name="theme-color" content="#2b0a3d">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Argent de Fête">
+<meta property="og:description" content="Combien ton partenaire doit-il vraiment donner (ou recevoir) pour les fêtes ? Fais le test, pour rire.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🧮%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Nunito:wght@500;700;800&display=swap">
+<style>
+:root{--bg:#fff0f6;--card:#fff;--ink:#2b0a3d;--mut:#7d5a92;--pk:#ff3d7f;--mg:#ffb100;--line:#f1cfe0;--on:#fff;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#22082f;--card:#33104a;--ink:#fff3fa;--mut:#c7a3dc;--line:#4d2169}}
+:root[data-theme="dark"]{--bg:#22082f;--card:#33104a;--ink:#fff3fa;--mut:#c7a3dc;--line:#4d2169}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:500 16px/1.4 Nunito,system-ui,sans-serif}
+#app{max-width:480px;margin:0 auto;padding:16px 16px 40px}
+h1,h2,.big{font-family:'Bagel Fat One',Nunito,system-ui,sans-serif;font-weight:400;margin:0}
+h1{font-size:2.1rem;line-height:1.05}
+h2{font-size:1.35rem;line-height:1.2;margin:18px 0 14px}
+.top{text-align:center;padding:14px 0 6px}
+.top p{color:var(--mut);margin:8px 0 0}
+.mas{font-size:3.6rem;text-align:center;line-height:1}
+.pop{animation:pop .5s}
+@keyframes pop{0%{transform:scale(.5) rotate(-12deg)}60%{transform:scale(1.25) rotate(8deg)}100%{transform:scale(1)}}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.pc{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:12px;text-align:left;color:var(--ink);font:inherit;display:flex;flex-direction:column;gap:3px;cursor:pointer;position:relative}
+.pc:active{transform:scale(.97)}
+.pc .pe{font-size:1.9rem}
+.pc small{color:var(--mut);font-size:.78rem;line-height:1.25}
+.lock{font-style:normal;font-size:.72rem;font-weight:800;color:var(--on);background:var(--pk);border-radius:99px;padding:2px 8px;align-self:flex-start;margin-top:4px}
+.fine{text-align:center;color:var(--mut);font-size:.85rem;margin-top:22px}
+.bar{height:8px;border-radius:9px;background:var(--line);overflow:hidden}
+.bar div{height:100%;background:linear-gradient(90deg,var(--mg),var(--pk));transition:width .4s}
+.bub{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:10px 14px;margin:10px 0;text-align:center;font-weight:700;min-height:48px}
+.pot{text-align:center;color:var(--mut)}
+.pot b{color:var(--pk);font-size:1.3rem}
+.opt,.btn,.next{display:block;width:100%;border:0;border-radius:14px;padding:14px;font:800 1rem Nunito,system-ui,sans-serif;cursor:pointer;margin-top:10px}
+.opt{background:var(--card);color:var(--ink);border:2px solid var(--line)}
+.opt.sel{border-color:var(--pk);background:var(--pk);color:var(--on)}
+.opt:disabled:not(.sel){opacity:.45}
+.next,.btn{background:var(--mg);color:#2b0a3d}
+.btn.alt{background:var(--card);color:var(--ink);border:2px solid var(--line)}
+.btn.pink{background:var(--pk);color:#fff}
+.back{background:none;border:0;color:var(--mut);font:800 1rem Nunito,sans-serif;padding:6px 0;cursor:pointer}
+input{width:100%;padding:14px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:700 1rem Nunito,sans-serif;margin-top:12px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:16px;margin-top:12px}
+.res{text-align:center}
+.big{font-size:2.9rem;line-height:1.05;color:var(--pk);margin:6px 0}
+.shr{background:var(--bg);border:2px dashed var(--line);border-radius:12px;padding:10px;margin-top:12px;font-size:.92rem}
+.led{text-align:left}
+.led h3{margin:0 0 6px;font-size:1rem}
+.led div{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--line)}
+.fall{position:fixed;top:-2.5rem;font-size:1.7rem;animation:fall linear forwards;pointer-events:none;z-index:5}
+@keyframes fall{to{transform:translateY(115vh) rotate(360deg)}}
+.ov{position:fixed;inset:0;background:rgba(20,0,30,.65);display:flex;align-items:center;justify-content:center;padding:20px;z-index:9}
+.ov .card{max-width:380px;text-align:center}
+.det{text-align:left;margin-top:12px;background:var(--bg);border:2px solid var(--line);border-radius:14px;padding:10px}.det summary{font-weight:800;cursor:pointer}.dr{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:.92rem}.dr small{color:var(--mut)}.pos{color:#1fa971}.neg{color:#e5484d}.det h3{margin:10px 0 2px;font-size:1rem}
+.tabs{display:flex;gap:6px;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:6px;margin-top:14px}
+.tab{flex:1;border:0;border-radius:13px;padding:10px 4px;background:none;color:var(--mut);font:800 .85rem Nunito,sans-serif;cursor:pointer}
+.tab.on{background:var(--mg);color:#2b0a3d}
+.ch{text-align:center;font-weight:800;color:var(--pk);margin:16px 0 8px}
+.pl{display:flex;flex-direction:column;gap:10px}
+.pr{display:flex;gap:12px;align-items:center;text-align:left;width:100%;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:12px;color:var(--ink);font:inherit;cursor:pointer}
+.pr:active{transform:scale(.98)}
+.pt{flex:none;width:58px;height:58px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.9rem;border:2px solid #2b0a3d}
+.pb{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pn{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pn b{font-family:'Bagel Fat One',Nunito,sans-serif;font-weight:400;font-size:1.1rem}
+.pb small{color:var(--mut);line-height:1.25}
+.pb em{font-style:normal;font-size:.8rem;font-weight:800;color:var(--pk)}
+.bd{font-style:normal;font-size:.68rem;font-weight:800;background:var(--mg);color:#2b0a3d;border-radius:99px;padding:2px 8px}
+.bd.pay{background:var(--pk);color:#fff}
+.af{color:#e5242b;font-weight:800}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .af{color:#ff5a5f}}:root[data-theme="dark"] .af{color:#ff5a5f}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-weight:800;z-index:10}
+@media (prefers-reduced-motion:reduce){.pop,.fall{animation:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const Q=(t,a,v,m,e,b,w,n,f)=>[t,[[a,v,m,e],[b,w,n,f]]];
+const YN=(t,v,m,e,w,n,f)=>Q(t,'Oui',v,m,e,'Non',w,n,f);
+const P=[
+{e:'👑',n:'La reine',t:"Un homme, un vrai, doit donner l’argent de fête à sa chérie. Donc j’attends le mien. J’ai fini de parler.",d:'recv',l:'ton chéri',q:[
+YN(`Tu as déjà offert un cadeau à ton chéri ?`,50000,`Une reine généreuse !`,'👑',-50000,`Une reine qui ne donne rien ?`,'😬'),
+YN(`Tu lui prépares à manger sans qu'il demande ?`,30000,`Quel dévouement !`,'😍',-20000,`La cuisine est en grève.`,'🙄'),
+YN(`Il a oublié ton anniversaire ?`,100000,`Crime ! Facture salée.`,'😤',0,`Il a retenu la date, bravo.`,'😊'),
+YN(`Il t'a déjà fait attendre plus d'une heure sans prévenir ?`,40000,`Ton temps a de la valeur.`,'⏰',0,`Respect.`,'👏'),
+YN(`Ton signe astrologique est le Lion ?`,20000,`Une vraie reine de la jungle.`,'🦁',5000,`Une reine à sa manière.`,'✨'),
+YN(`Tu partages ta dernière brochette avec lui ?`,15000,`Amour pur.`,'🍢',-10000,`Ça, c'est grave.`,'😱')]},
+{e:'💪',n:'La femme battante',t:'Cette année, je dois donner l’argent de fête à mon chéri.',d:'give',l:'ton chéri',q:[
+YN(`Ton chéri t'a soutenue dans une période difficile ?`,50000,`Il a été là, il mérite !`,'🥹',-20000,`Il était où ?`,'🤨'),
+YN(`Il se lève tôt pour se battre pour vous deux ?`,30000,`Un battant, lui aussi.`,'💪',-10000,`Le réveil sonne pour tout le monde.`,'😴'),
+YN(`Il te dit merci quand tu fais un effort ?`,20000,`Un homme reconnaissant.`,'🙏',-10000,`Merci est un mot gratuit.`,'😒'),
+YN(`Il t'a déjà fait rire quand tu étais fatiguée ?`,25000,`Un remède gratuit !`,'🤣',0,`On attend encore.`,'😶'),
+YN(`Il sait cuire le riz sans le brûler ?`,30000,`Compétence rare, bonus !`,'🍚',-5000,`Le riz a souffert.`,'🔥'),
+YN(`Il a déjà gardé le silence quand tu avais raison ?`,20000,`Sagesse !`,'🤐',0,`Il plaide encore.`,'🗣️')]},
+{e:'🪵',n:'La menuisière',t:'J’ai pas de gar, mais j’ai beaucoup de pointeurs : chacun d’eux va donner l’argent de fête.',d:'recv',multi:1,mw:'pointeur',l:'ton pointeur',
+rv:[[`Lequel te fait le plus rire ?`,15000],[`Lequel est le plus généreux sans que tu demandes ?`,25000],[`Lequel te supporte quand tu es de mauvaise humeur ?`,20000],[`Lequel est le plus radin ?`,-20000]],mega:100000,q:[
+YN(`{N} répond à tes messages dans l'heure ?`,20000,`Un pointeur sérieux.`,'😍',-10000,`Il a perdu son réseau ?`,'🧐'),
+YN(`{N} t'a déjà envoyé du crédit ou du Mobile Money sans que tu demandes ?`,30000,`Pointeur généreux !`,'🤩',-10000,`Il regarde juste ?`,'💅'),
+YN(`Tu supportes que {N} te fasse attendre ?`,40000,`Tu supportes trop, il paie !`,'😮‍💨',0,`Tu as de la dignité, bravo.`,'💅'),
+YN(`Si {N} était un plat, ce serait un attiéké sans poisson ?`,25000,`Il manque l'essentiel !`,'🤣',5000,`Il est complet, ok.`,'😋')]},
+{e:'🕵️',n:'Kpakpato : CP Braiso',t:'L’argent de fête des gens',d:'cp',cp:1,l:'le couple',q:[
+YN(`{R} répond vite aux messages de {G} ?`,20000,`Un vrai bon partenaire.`,'😍',-10000,`Suspect, très suspect.`,'🧐'),
+YN(`{R} fait des efforts pour passer du temps avec {G} ?`,30000,`Présent, il mérite.`,'👏',-20000,`Absent, mais vite réclamant.`,'😒'),
+YN(`{R} a déjà offert un cadeau à {G} ?`,40000,`Il a déjà donné, il mérite.`,'🎁',-20000,`Il reçoit sans rien donner ?`,'🤨'),
+YN(`{R} présente {G} à sa famille ?`,30000,`Un vrai sérieux.`,'💍',-10000,`La famille ne sait rien.`,'🤫'),
+YN(`{R} sait garder un secret ?`,20000,`Une tombe.`,'🤐',-10000,`Le quartier est déjà au courant.`,'📣'),
+YN(`{R} partage sa dernière brochette avec {G} ?`,25000,`L'amour pur.`,'🍢',-15000,`Ça, c'est grave.`,'😱')]},
+{e:'✊',n:'Les syndicats',t:"Je t’aime, mais tchai… Faut pas me stresser. L’argent de fête que je vais te donner là, faut prendre.",d:'give',l:'ta chérie',q:[
+Q(`Depuis combien de temps êtes-vous en couple ?`,'Moins de 3 mois',0,`Tchai, c'est trop tôt.`,'😬','Plus de 3 mois',20000,`On commence à discuter.`,'😅'),
+YN(`Elle t'a déjà aidé pour un souci de fin de mois ?`,15000,`Elle a fait un effort, rends la pareille.`,'🥹',0,`Chacun sa caisse.`,'😶'),
+YN(`Elle t'écoute quand tu parles de ton travail ?`,10000,`Bonne oreille.`,'👂',-5000,`Elle regarde son téléphone.`,'📱'),
+YN(`Elle t'a déjà offert un cadeau ?`,20000,`Rends-lui la pareille.`,'🎁',0,`Aucun cadeau, aucune dette.`,'😏'),
+YN(`Tu as déjà promis un cadeau que tu n'as pas donné ?`,20000,`Une promesse est une dette.`,'😬',0,`Parole d'homme.`,'🤝'),
+YN(`Tu dis « tchai » plus de 3 fois par jour ?`,-10000,`Le syndicat te félicite.`,'✊',10000,`Tu en dis moins, ça paie.`,'😅')]},
+{e:'🙌',n:'Le vrai homme',t:'Bébé, tu mérites l’argent de fête.',d:'give',l:'ta chérie',q:[
+YN(`Elle est ta seule go ?`,50000,`Un vrai homme, respect.`,'😎',-20000,`Alors ce profil n'est pas le tien…`,'😳'),
+YN(`Elle t'a déjà soutenu dans une période difficile ?`,40000,`Elle mérite !`,'🥹',0,`On observe.`,'🤨'),
+YN(`Tu penses à elle sans qu'on te le rappelle ?`,20000,`Amour spontané.`,'💞',-10000,`Rappel obligatoire ?`,'⏰'),
+YN(`Elle t'a déjà fait rire en pleine dispute ?`,25000,`Cadeau rare !`,'🤣',0,`Dispute sérieuse.`,'😐'),
+YN(`Tu connais sa pointure de chaussures ?`,30000,`Un vrai espion d'amour.`,'👠',-15000,`Direction le magasin !`,'😅'),
+YN(`Elle t'a déjà laissé la plus grosse part de poulet ?`,35000,`L'amour se mesure en poulet.`,'🍗',0,`Elle garde le poulet.`,'😤')]},
+{e:'💰',n:'Le shuga Dady',t:'Mon amour pour toi, c’est pas l’argent de fête, c’est chèque de fête.',d:'give',l:'ta shuga girl',q:[
+YN(`Elle te fait revivre ta jeunesse cette année ?`,200000,`La carte magnétique est sortie.`,'🤩',20000,`Un petit effort quand même.`,'😏'),
+YN(`Elle te fait rire jusqu'aux larmes ?`,80000,`Un bonheur à prix d'or.`,'😂',-20000,`On manque d'ambiance.`,'😐'),
+YN(`Elle te masse quand ton dos fait mal ?`,60000,`Une infirmière de luxe.`,'💆',-10000,`Elle ne connaît pas le massage.`,'😒'),
+YN(`Elle a déjà dansé pour toi à la maison ?`,70000,`Spectacle privé, ça se paie.`,'💃',0,`Prochain acte, peut-être.`,'😏'),
+YN(`Elle met son téléphone de côté quand tu parles ?`,50000,`Attention rare, bonus.`,'🥰',-20000,`Le téléphone passe avant toi.`,'📱'),
+YN(`Elle connaît ta chanson préférée ?`,40000,`Elle connaît ta jeunesse.`,'🎵',-10000,`Elle ne connaît pas ta bande-son.`,'🎧')]},
+{e:'🎩',n:'Le djandjou',t:"Djandjouya n’est pas facile : chacune de mes gos va me demander l’argent de fête.",d:'give',paid:1,multi:1,mw:'go',l:'une de tes gos',
+rv:[[`Laquelle te supporte le plus quand tu rentres tard ?`,25000],[`Laquelle cuisine le mieux ?`,20000],[`Laquelle sait garder tes secrets ?`,30000],[`Laquelle fait le plus de scandales ?`,-15000]],mega:150000,q:[
+YN(`{N} t'attend toujours quand tu rentres tard ?`,30000,`Fidèle au poste !`,'🥰',-10000,`Elle est occupée aussi.`,'😏'),
+YN(`{N} te prépare à manger quand tu passes ?`,25000,`Cuisine de reine.`,'😋',-5000,`Pas de repas, pas de bonus.`,'🍽️'),
+YN(`{N} sait garder un secret ?`,40000,`Une go en or.`,'🤐',-20000,`Le secret est déjà dans le quartier.`,'📣'),
+YN(`{N} sait danser le coupé-décalé ?`,20000,`Ambiance garantie !`,'💃',0,`Elle danse avec le cœur.`,'😅')]},
+{e:'👸',n:'Le garçon princesse',t:"Un franc, je ne donne pas. C’est moi qui dois recevoir l’argent de fête.",d:'recv',l:'ta chérie',q:[
+YN(`Tu fais la cuisine pour ta chérie ?`,30000,`Prince en cuisine, il mérite !`,'👨‍🍳',-10000,`Le prince a oublié son tablier.`,'😅'),
+YN(`Tu as déjà payé le restaurant ?`,40000,`Tu as déjà donné, ça compte !`,'🥹',-20000,`Un prince, oui, mais pas un radin.`,'👑'),
+YN(`Elle a oublié ton anniversaire ?`,80000,`Impardonnable !`,'😢',0,`Elle assure.`,'😊'),
+YN(`Elle t'a déjà laissé payer l'addition sans te demander ?`,50000,`Remboursement immédiat !`,'💸',0,`Elle respecte le prince.`,'🙂'),
+YN(`Tu pleures devant les films romantiques ?`,20000,`Un cœur de prince.`,'🥲',5000,`Un prince discret.`,'😎'),
+YN(`Tu sais plier un drap-housse ?`,30000,`Talent rare, bonus !`,'🧺',0,`Personne ne sait.`,'🤷')]}
+];
+const $=s=>document.querySelector(s),app=$('#app');
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const F=n=>Math.max(0,n).toLocaleString('fr-FR')+' F';
+let S=null,plays=0,ledger=[];
+
+function ledgerHTML(){
+  if(!ledger.length)return'';
+  const row=x=>`<div><span>${x.e} ${esc(x.name)}</span><b>${F(x.amt)}</b></div>`;
+  const r=ledger.filter(x=>x.recv),g=ledger.filter(x=>!x.recv);
+  const sum=a=>a.reduce((s,x)=>s+x.amt,0);
+  return`<div class="card led"><h2 style="margin:0 0 10px">📒 Tableau des comptes</h2>
+  ${r.length?`<h3>Tu dois recevoir (${F(sum(r))})</h3>${r.map(row).join('')}`:''}
+  ${g.length?`<h3 style="margin-top:12px">Tu dois donner (${F(sum(g))})</h3>${g.map(row).join('')}`:''}</div>`;
+}
+let TABK='femmes';
+const TABS=[['hommes','👨','HOMMES',[4,5,7,6,8],'Choisis ton statut actuel'],['femmes','👩','FEMMES',[0,1,2],'Choisis ton statut actuel'],['kpakpato','🔍','KPAKPATO',[3],'Juge le couple de tes amis']];
+const TC=['#ffcf3f','#5bb3f0','#ff9a3c','#b794f6','#35d69a','#f57bbf','#4dd0e1','#ff6b6b','#a3e635'];
+function setTab(k){TABK=k;home()}
+const hl=t=>t.replace(/([lL][’'])argent de fête/g,'<b class="af">$1argent de fête</b>');
+function cardHTML(i){
+  const p=P[i],dir=p.d==='recv'?'📥 Tu reçois':p.d==='give'?'📤 Tu donnes':'⚖️ Tu juges';
+  const bd=(p.multi?`<i class="bd">MULTI-${p.mw.toUpperCase()}S</i>`:'')+(p.paid?'<i class="bd pay">🔒 PAYANT</i>':'');
+  return `<button class="pr" onclick="pick(${i})"><span class="pt" style="background:${TC[i]}">${p.e}</span><span class="pb"><span class="pn"><b>${p.n}</b>${bd}</span><small>« ${hl(p.t)} »</small><em>${dir}${p.multi?', jusqu\'à 5':''}</em></span></button>`;
+}
+function home(){
+  S=null;
+  const t=TABS.find(x=>x[0]===TABK);
+  app.innerHTML=`<div class="top"><div class="mas">🧮</div><h1>Argent de Fête</h1><p>Combien ton partenaire doit-il vraiment donner (ou recevoir) ?</p></div>
+  <div class="tabs">${TABS.map(x=>`<button class="tab${x[0]===TABK?' on':''}" onclick="setTab('${x[0]}')">${x[1]} ${x[2]}</button>`).join('')}</div>
+  <p class="ch">👇 ${t[4]}</p>
+  <div class="pl">${t[3].map(cardHTML).join('')}</div>
+  ${ledgerHTML()}<p class="fine">🎭 C'est un jeu, pour rire ! Aucun vrai montant n'est exigé.</p>`;
+  scrollTo(0,0);
+}
+function gate(p,go){
+  if(!(p.paid||plays>=1))return go();
+  const o=document.createElement('div');o.className='ov';
+  o.innerHTML=`<div class="card"><div class="mas">🔒</div><h2>${p.paid?'Profil payant':'Ta partie gratuite est utilisée'}</h2><p style="color:var(--mut)">Débloque cette partie pour 300 F via Mobile Money. <br><small>(Démo : le paiement est simulé.)</small></p><button class="btn pink" id="pay">Payer 300 F (démo)</button><button class="btn alt" id="no">Plus tard</button></div>`;
+  document.body.appendChild(o);
+  $('#pay').onclick=()=>{o.remove();go()};
+  $('#no').onclick=()=>o.remove();
+}
+function pick(i){const p=P[i];gate(p,()=>setup(p))}
+function setup(p){
+  if(p.multi)return setupMulti(p);
+  if(p.cp)return setupCP(p);
+  app.innerHTML=`<button class="back" onclick="home()">← Profils</button>
+  <div class="card res"><div class="mas">${p.e}</div><h2 style="margin:10px 0 4px">${p.n}</h2><p style="color:var(--mut);margin:0">${hl(p.t)}</p>
+  <input id="nm" maxlength="24" placeholder="Prénom de ${p.l}" autocomplete="off"><button class="btn pink" onclick="start(${P.indexOf(p)})">C'est parti 🚀</button></div>`;
+  scrollTo(0,0);
+}
+function start(i){
+  const p=P[i];
+  S={p,name:$('#nm').value.trim()||p.l,i:0,tot:0,pts:0,mood:'🧮'};
+  ask();
+}
+function ask(){
+  const {p,i}=S,q=p.q[i];
+  app.innerHTML=`<div class="bar"><div style="width:${i/p.q.length*100}%"></div></div>
+  <div class="mas" id="mo" style="margin-top:14px">${S.mood}</div>
+  <div class="bub" id="bub">${S.names?`${esc(S.name)} (${S.ni+1}/${S.names.length}) — `:''}Question ${i+1} sur ${p.q.length}</div>
+  ${p.d==='verdict'?'':`<div class="pot">Cagnotte : <b id="pot">${F(S.tot)}</b></div>`}
+  <h2>${qt(q[0])}</h2>${q[1].map((o,k)=>`<button class="opt" onclick="ans(${k})">${o[0]}</button>`).join('')}`;
+  scrollTo(0,0);
+}
+function count(el,a,b){
+  const t0=performance.now();
+  (function f(t){const k=Math.min(1,(t-t0)/600);el.textContent=F(Math.round(a+(b-a)*k));if(k<1)requestAnimationFrame(f)})(t0);
+}
+function ans(k){
+  const {p,i}=S,o=p.q[i][1][k],before=S.tot;
+  S.tot+=o[1];S.pts+=o[1];S.mood=o[3];
+  (S.cur=S.cur||[]).push({q:qt(p.q[i][0]),qr:qt(p.q[i][0],1),a:o[0],v:o[1],m:o[2],e:o[3]});
+  S.last=`${o[3]} ${qt(p.q[i][0],1)} ${o[0]} → ${sg(o[1])} F. ${o[2]} — Argent de Fête (pour rire 😄)`;
+  document.querySelectorAll('.opt').forEach((b,j)=>{b.disabled=true;if(j===k)b.classList.add('sel')});
+  const m=$('#mo');m.textContent=o[3];m.classList.remove('pop');void m.offsetWidth;m.classList.add('pop');
+  $('#bub').textContent=o[2];
+  if($('#pot'))count($('#pot'),Math.max(0,before),Math.max(0,S.tot));
+  const n=document.createElement('button');n.className='next';
+  n.textContent=i+1<p.q.length?'Suivant':(S.names?(S.ni<S.names.length-1?'Continuer avec '+S.names[S.ni+1]+' 👉':(S.names.length>1?'Passer au duel ⚔️':'Voir ma carte 🥁')):'Voir le verdict 🥁');
+  n.onclick=()=>{S.i++;S.i<p.q.length?ask():(S.names?nextPointeur():result())};
+  app.appendChild(n);
+  const sh=document.createElement('button');sh.className='btn alt';sh.textContent='Partager cette réponse 📲';sh.onclick=()=>shareText(S.last);app.appendChild(sh);
+}
+function rain(ch){
+  for(let i=0;i<30;i++){
+    const s=document.createElement('span');s.className='fall';
+    s.textContent=ch[i%ch.length];s.style.left=Math.random()*100+'vw';
+    s.style.animationDuration=(2+Math.random()*2.5)+'s';s.style.animationDelay=Math.random()*.8+'s';
+    document.body.appendChild(s);setTimeout(()=>s.remove(),5500);
+  }
+}
+function result(){
+  if(S.p.cp)return resultCP();
+  const {p,name}=S;plays++;
+  let emo,line,big,share,sub='';
+  if(p.d==='verdict'){
+    const r=S.pts/p.q.length;
+    [emo,big]=r===1?['💍','Couple solide']:r>=.5?['🤔','Couple fragile']:['🏃🏾‍♀️','Fuis, ma chérie !'];
+    line=`Verdict sur le couple de ${esc(name)}`;
+    share=`🕵️ Verdict CP Braiso sur le couple de ${name} : ${big}`;
+    rain(['💍','❤️','🔍']);
+  }else{
+    const amt=Math.max(0,S.tot),recv=p.d==='recv';
+    emo=recv?'🤑':'💸';
+    line=recv?`${esc(name)} te doit`:`Tu dois donner à ${esc(name)}`;
+    big=F(amt);
+    ledger.push({e:p.e,name,amt,recv});
+    share=recv?`${p.e} ${name} me doit ${big} pour les fêtes ! 👑`:`${p.e} Je dois ${big} à ${name} pour les fêtes 💸`;
+    sub=amt===0?"Zéro franc. Tu t'en sors bien… cette fois.":'';
+    rain(recv?['💰','🤑','💵','✨']:['💸','💵','🎁','✨']);
+  }
+  S.share=share;
+  app.innerHTML=`<div class="card res"><div class="mas pop">${emo}</div><p style="margin:10px 0 0;color:var(--mut)">${p.e} ${p.n}</p><h2 style="margin:4px 0">${line}</h2><div class="big" id="bg">${p.d==='verdict'?big:F(0)}</div><p style="color:var(--mut);margin:0">${sub}</p>
+  <div class="shr">${esc(share)}</div>
+  <button class="btn pink" onclick="shareIt()">Partager en Status 📲</button>
+  <button class="btn" onclick="again()">Ajouter un autre partenaire</button>
+  <button class="btn alt" onclick="home()">Changer de profil</button></div>${ledgerHTML()}<p class="fine">🎭 C'est un jeu, pour rire !</p>`;
+  if(p.d!=='verdict')count($('#bg'),0,Math.max(0,S.tot));
+  $('.shr').insertAdjacentHTML('beforebegin',detHTML([{name:'',det:S.cur||[]}]));
+  scrollTo(0,0);
+}
+function setupMulti(p){
+  window.MP=p;
+  app.innerHTML=`<button class="back" onclick="home()">← Profils</button>
+  <div class="card res"><div class="mas">${p.e}</div><h2 style="margin:10px 0 4px">${p.n}</h2><p style="color:var(--mut);margin:0">Ajoute le prénom de tes ${p.mw}s (5 maximum) avant de commencer.</p>
+  <div id="pl"></div><button class="btn alt" id="add" onclick="addP()">+ Ajouter un nom</button><button class="btn pink" onclick="startMulti()">C'est parti 🚀</button></div>`;
+  addP();scrollTo(0,0);
+}
+function addP(){
+  const pl=$('#pl'),n=pl.children.length;
+  if(n>=5)return;
+  const i=document.createElement('input');i.maxLength=24;i.autocomplete='off';i.placeholder='Prénom ('+window.MP.mw+' '+(n+1)+')';
+  pl.appendChild(i);
+  const a=$('#add');
+  if(n+1>=5)a.style.display='none';else a.textContent='+ Ajouter un nom ('+(n+1)+'/5)';
+}
+function startMulti(){
+  const names=[...$('#pl').children].map(x=>x.value.trim()).filter(Boolean);
+  if(!names.length)return toast('Ajoute au moins un nom');
+  const p=window.MP;
+  S={p,names,ni:0,name:names[0],i:0,tot:0,pts:0,mood:'🧮',results:[]};
+  ask();
+}
+function nextPointeur(){
+  S.results.push({name:S.name,amt:Math.max(0,S.tot),det:S.cur||[]});S.cur=[];
+  S.ni++;
+  if(S.ni>=S.names.length)return S.names.length>1?startRival():resultMulti();
+  const prev=S.name;
+  S.name=S.names[S.ni];S.i=0;S.tot=0;S.pts=0;
+  app.innerHTML=`<div class="card res"><div class="mas pop">${S.mood}</div><h2 style="margin:10px 0 6px">${esc(prev)} : terminé ✅</h2><p style="color:var(--mut)">Ta carte s'affichera à la fin, quand tout le monde sera passé.<br>Au suivant : <b>${esc(S.name)}</b> (${S.ni+1}/${S.names.length})</p><button class="btn pink" onclick="ask()">Continuer</button></div>`;
+  scrollTo(0,0);
+}
+function resultMulti(){
+  const {p}=S,rs=S.results,total=rs.reduce((s,r)=>s+r.amt,0);
+  plays++;
+  rs.forEach(r=>ledger.push({e:p.e,name:r.name,amt:r.amt,recv:p.d==='recv'}));
+  S.share=`${p.e} ${p.d==='recv'?'Mes '+p.mw+'s me doivent':'Je dois au total'} ${F(total)} pour les fêtes : ${rs.map(r=>r.name+' '+F(r.amt)).join(', ')}${S.mega?' (méga bonus : '+S.mega+')':''} ${p.d==='recv'?'👑':'💸'}`;
+  app.innerHTML=`<div class="card res"><div class="mas pop">${p.d==='recv'?'🤑':'💸'}</div><p style="margin:10px 0 0;color:var(--mut)">${p.e} ${p.n}</p><h2 style="margin:4px 0">${p.d==='recv'?'Tes '+p.mw+'s te doivent':'Tu dois au total'}</h2><div class="big" id="bg">${F(0)}</div>
+  ${S.mega?`<p style="margin:0;color:var(--mut)">🏆 Méga bonus : <b>${esc(S.mega)}</b></p>`:''}<div class="led" style="margin-top:8px">${rs.map(r=>`<div><span>${p.e} ${esc(r.name)}</span><b>${F(r.amt)}</b></div>`).join('')}</div>
+  <div class="shr">${esc(S.share)}</div>
+  <button class="btn pink" onclick="shareIt()">Partager en Status 📲</button>
+  <button class="btn" onclick="again()">Recommencer avec d'autres ${p.mw}s</button>
+  <button class="btn alt" onclick="home()">Changer de profil</button></div><p class="fine">🎭 C'est un jeu, pour rire !</p>`;
+  count($('#bg'),0,total);$('.shr').insertAdjacentHTML('beforebegin',multiDetHTML(rs));rain(['💰','🤑','💵','✨']);scrollTo(0,0);
+}
+const qt=(t,raw)=>{const x=raw?s=>s:esc;return t.replace(/\{G\}/g,x(S.g||'')).replace(/\{R\}/g,x(S.r||'')).replace(/\{N\}/g,x(S.name||''))};
+function setupCP(p){
+  app.innerHTML=`<button class="back" onclick="home()">← Profils</button>
+  <div class="card res"><div class="mas">${p.e}</div><h2 style="margin:10px 0 4px">${p.n}</h2><p style="color:var(--mut);margin:0">Remplis d'abord les infos, puis juge le couple.</p>
+  <input id="cpn" maxlength="24" placeholder="Ton prénom (CP Braiso)" autocomplete="off">
+  <input id="cpg" maxlength="24" placeholder="Prénom de celui/celle qui donne" autocomplete="off">
+  <input id="cpr" maxlength="24" placeholder="Prénom de celui/celle qui reçoit" autocomplete="off">
+  <button class="btn pink" onclick="startCP()">C'est parti 🚀</button></div>`;
+  scrollTo(0,0);
+}
+function startCP(){
+  const n=$('#cpn').value.trim(),g=$('#cpg').value.trim(),r=$('#cpr').value.trim();
+  if(!n||!g||!r)return toast('Remplis les 3 prénoms');
+  S={p:P.find(x=>x.cp),cp:n,g,r,name:g,i:0,tot:0,pts:0,mood:'🧮'};
+  ask();
+}
+function resultCP(){
+  const {p,cp,g,r}=S,amt=Math.max(0,S.tot);
+  plays++;
+  S.share=`🕵️ Moi, ${cp}, en ma qualité de CP Braiso, j'estime que ${g} doit donner ${F(amt)} à ${r} !`;
+  app.innerHTML=`<div class="card res"><div class="mas pop">⚖️</div><p style="margin:10px 0 0;color:var(--mut)">${p.e} ${p.n}</p>
+  <h2 style="margin:6px 0;line-height:1.35">Moi, <b>${esc(cp)}</b>, en ma qualité de CP Braiso, j'estime que <b>${esc(g)}</b> doit donner</h2>
+  <div class="big" id="bg">${F(0)}</div><h2 style="margin:4px 0 0">à ${esc(r)}</h2>
+  <div class="shr">${esc(S.share)}</div>
+  <button class="btn pink" onclick="shareIt()">Partager en Status 📲</button>
+  <button class="btn" onclick="again()">Juger un autre couple</button>
+  <button class="btn alt" onclick="home()">Changer de profil</button></div><p class="fine">🎭 C'est un jeu, pour rire !</p>`;
+  count($('#bg'),0,amt);$('.shr').insertAdjacentHTML('beforebegin',detHTML([{name:'',det:S.cur||[]}]));rain(['⚖️','💰','🕵️','✨']);scrollTo(0,0);
+}
+function rq(){const p=S.p;return S.ri>=p.rv.length?[`${p.mw==='go'?'Laquelle':'Lequel'} mérite le MÉGA BONUS ? 🏆`,p.mega]:p.rv[S.ri]}
+function startRival(){S.ri=0;S.mega=null;rival()}
+function rival(){
+  const p=S.p,q=rq(),tot=p.rv.length+1;
+  app.innerHTML=`<div class="bar"><div style="width:${S.ri/tot*100}%"></div></div><div class="mas pop" style="margin-top:14px">⚔️</div><div class="bub">Duel entre tes ${p.mw}s : ${S.ri+1}/${tot}</div><h2>${q[0]}</h2>${S.names.map((n,k)=>`<button class="opt" onclick="duel(${k})">${esc(n)}</button>`).join('')}`;
+  scrollTo(0,0);
+}
+function duel(k){
+  const p=S.p,q=rq(),r=S.results[k];
+  r.amt=Math.max(0,r.amt+q[1]);
+  (r.det=r.det||[]).push({q:q[0],a:'Choisi(e) au duel',v:q[1],m:'',e:'⚔️'});
+  toast((q[1]>=0?'+':'−')+Math.abs(q[1]).toLocaleString('fr-FR')+' F pour '+r.name);
+  if(S.ri>=p.rv.length)S.mega=r.name;
+  S.ri++;
+  S.ri>p.rv.length?resultMulti():rival();
+}
+const sg=v=>(v>=0?'+':'−')+Math.abs(v).toLocaleString('fr-FR');
+function detHTML(gs){
+  const rows=d=>d.map(x=>`<div class="dr"><span>${x.e} ${x.q}<br><small>${esc(x.a)}${x.m?' — '+esc(x.m):''}</small></span><b class="${x.v<0?'neg':'pos'}">${sg(x.v)}</b></div>`).join('');
+  return `<details class="det"><summary>Voir le détail de chaque question</summary>${gs.map(g=>`${g.name?`<h3>${esc(g.name)}</h3>`:''}${rows(g.det||[])}`).join('')}</details>`;
+}
+async function shareText(t){
+  try{if(navigator.share){await navigator.share({text:t});return}await navigator.clipboard.writeText(t);toast('Copié ! Colle-le en Status 📲')}
+  catch(e){if(e&&e.name!=='AbortError')toast('Copie impossible ici')}
+}
+function multiDetHTML(rs){
+  return rs.map((r,k)=>`<div class="det"><h3>${S.p.e} ${esc(r.name)} : ${F(r.amt)}</h3>${(r.det||[]).map(x=>`<div class="dr"><span>${x.e} ${x.q}<br><small>${esc(x.a)}${x.m?' — '+esc(x.m):''}</small></span><b class="${x.v<0?'neg':'pos'}">${sg(x.v)}</b></div>`).join('')}<button class="btn pink" onclick="sharePartner(${k})">Partager ${esc(r.name)} en Status 📲</button></div>`).join('');
+}
+function makeCard(title,sub,rows,amt){
+  const W=1080,pad=60,cv=document.createElement('canvas'),c=cv.getContext('2d');
+  const fq='800 38px Nunito,sans-serif',fa='600 30px Nunito,sans-serif',fb='400 120px "Bagel Fat One",Nunito,sans-serif';
+  const wrap=(t,f,mw)=>{c.font=f;const L=[];let l='';t.split(' ').forEach(x=>{const n=l?l+' '+x:x;if(c.measureText(n).width>mw&&l){L.push(l);l=x}else l=n});if(l)L.push(l);return L};
+  const items=rows.map(x=>({ql:wrap(x.e+' '+(x.qr||x.q),fq,W-2*pad-300),al:wrap(x.a+(x.m?' — '+x.m:''),fa,W-2*pad-300),v:x.v}));
+  const rh=it=>it.ql.length*48+it.al.length*40+44;
+  const H=Math.max(1920,700+items.reduce((s,it)=>s+rh(it),0));
+  cv.width=W;cv.height=H;
+  const dash=yy=>{c.strokeStyle='#2b0a3d';c.lineWidth=4;c.setLineDash([22,16]);c.beginPath();c.moveTo(pad,yy);c.lineTo(W-pad,yy);c.stroke();c.setLineDash([])};
+  c.fillStyle='#ffb100';c.fillRect(0,0,W,H);
+  c.fillStyle='#fff';c.fillRect(30,60,W-60,H-120);
+  c.textAlign='center';c.fillStyle='#2b0a3d';
+  c.font='400 64px "Bagel Fat One",Nunito,sans-serif';c.fillText('ARGENT DE FÊTE',W/2,170);
+  c.font='800 42px Nunito,sans-serif';c.fillText(title,W/2,240);
+  c.fillStyle='#7d5a92';c.font='700 38px Nunito,sans-serif';c.fillText(sub,W/2,300);
+  let y=350;dash(y);y+=30;
+  items.forEach(it=>{
+    let yy=y+40;
+    c.textAlign='left';c.fillStyle='#2b0a3d';c.font=fq;it.ql.forEach(l=>{c.fillText(l,pad,yy);yy+=48});
+    c.fillStyle='#7d5a92';c.font=fa;it.al.forEach(l=>{c.fillText(l,pad,yy);yy+=40});
+    c.textAlign='right';c.fillStyle=it.v<0?'#e5484d':'#1fa971';c.font='800 44px Nunito,sans-serif';c.fillText(sg(it.v)+' F',W-pad,y+44);
+    y+=rh(it);
+    c.strokeStyle='#eee';c.lineWidth=3;c.beginPath();c.moveTo(pad,y-14);c.lineTo(W-pad,y-14);c.stroke();
+  });
+  y+=10;dash(y);y+=50;
+  c.fillStyle='#ffe14d';c.strokeStyle='#2b0a3d';c.lineWidth=6;c.beginPath();
+  if(c.roundRect)c.roundRect(pad,y,W-2*pad,270,24);else c.rect(pad,y,W-2*pad,270);
+  c.fill();c.stroke();
+  c.textAlign='center';c.fillStyle='#2b0a3d';c.font='800 38px Nunito,sans-serif';c.fillText('MONTANT FINAL',W/2,y+75);
+  c.font=fb;c.fillText(F(amt),W/2,y+205);
+  c.fillStyle='#7d5a92';c.font='700 34px Nunito,sans-serif';c.fillText('🎭 C\'est un jeu, pour rire ! • Argent de Fête',W/2,H-110);
+  return cv;
+}
+function showImg(u,t){
+  const o=document.createElement('div');o.className='ov';o.style.overflow='auto';o.style.alignItems='flex-start';
+  o.innerHTML=`<div class="card" style="max-width:420px"><img src="${u}" style="width:100%;border-radius:12px" alt="Carte à partager"><p style="color:var(--mut);margin:10px 0">Maintiens ton doigt sur l'image pour l'enregistrer, puis poste-la en Status.</p><button class="btn pink" id="cpt">Copier le texte</button><button class="btn alt" id="cls">Fermer</button></div>`;
+  document.body.appendChild(o);
+  $('#cls').onclick=()=>o.remove();$('#cpt').onclick=()=>shareText(t);
+}
+function shareImg(cv,t){
+  cv.toBlob(async b=>{
+    try{
+      const f=new File([b],'argent-de-fete.png',{type:'image/png'});
+      if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],text:t});return}
+    }catch(e){if(e&&e.name==='AbortError')return}
+    showImg(cv.toDataURL('image/png'),t);
+  },'image/png');
+}
+function sharePartner(k){
+  const p=S.p,r=S.results[k],recv=p.d==='recv';
+  const cv=makeCard(p.e+' '+p.n,recv?r.name+' te doit':'Tu dois donner à '+r.name,r.det||[],r.amt);
+  shareImg(cv,p.e+' '+(recv?r.name+' me doit':'Je dois à '+r.name)+' '+F(r.amt)+' pour les fêtes — Argent de Fête (pour rire 😄)');
+}
+function again(){const p=S.p;gate(p,()=>setup(p))}
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2200)}
+async function shareIt(){
+  const t=S.share+' — Argent de Fête (pour rire 😄)';
+  try{
+    if(navigator.share){await navigator.share({text:t});return}
+    await navigator.clipboard.writeText(t);toast('Copié ! Colle-le en Status 📲');
+  }catch(e){if(e&&e.name!=='AbortError')toast('Copie le texte ci-dessus à la main')}
+}
+home();
+</script>
+</body>
+</html>
